@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { IUserModel } from "./IModels";
-import { IUser } from "../types/interfaces";
+import { IUser } from "../@types/interfaces";
 
 
 
@@ -44,7 +44,13 @@ class UserModels implements IUserModel{
   
       return user
     }catch(e : any){
-      return e.data
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        if(e.code === "P2025"){
+          return 'P2025'
+        }
+      }
+
+      throw e
     }
   }
 

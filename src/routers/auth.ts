@@ -1,6 +1,7 @@
 import { Router } from "express";
 import irouter from "./irouter";
 import AuthController from "../controllers/auth/AuthController";
+import { authGate } from "../middleware/auth-gate";
 
 
 class AuthRoutes implements irouter{
@@ -12,9 +13,11 @@ class AuthRoutes implements irouter{
     }
 
     public routes(): void{
+        this.router.get('/', authGate,AuthController.index)
+        this.router.get('/logout', authGate,AuthController.logout)
         this.router.post('/login', AuthController.login)
         this.router.post('/registrasi', AuthController.createUser)
-        // this.router.get('/login', AuthController.logout)
+        this.router.get('/refresh', AuthController.refreshToken)
     }
     
 }

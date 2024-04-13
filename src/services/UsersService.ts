@@ -1,5 +1,5 @@
 import UserModels from "../models/UserModels"
-import { IUser } from "../types/interfaces"
+import { IUser } from "../@types/interfaces"
 import { PwdHash } from "../utility/PasswordHash"
 
 class UsersService{
@@ -25,8 +25,8 @@ class UsersService{
   deleteUser = async (id: string): Promise<IUser | any> => {
     // return await UserModels.delete(id)
     const user = await UserModels.delete(id)
-    if(!user){
-      return {'err':true,'message':'data tidak di temukan'}
+    if(user === 'P2025'){
+      return {'err':true,'message':'data tidak ditemukan'}
     }
     return user
 }

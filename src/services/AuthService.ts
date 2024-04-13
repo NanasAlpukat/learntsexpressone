@@ -1,8 +1,10 @@
 import { PwdCompare } from "../utility/PasswordHash"
 import jwt from 'jsonwebtoken'
 import UserModels from "../models/UserModels"
-import { JwtPaylod } from "../types/interfaces"
-import { AccessTokenTime, JwtToken, RefreshTokenTime } from "../config/Env"
+import { JwtPaylod } from "../@types/interfaces"
+import { AccessTokenTime, JwtToken, RedisTime, RefreshTokenTime } from "../config/Env"
+import redisClient from "../utility/ConnectRedis"
+// import redisClient from "../utility/ConnectRedis"
 
 
 class AuthService{
@@ -14,6 +16,22 @@ class AuthService{
     })
 
     return token
+  }
+
+  refToken = async(refToken : string): Promise<any> =>{
+    const decode = jwt.verify(refToken,JwtToken) as JwtPaylod
+    if(!decode){
+      return {'err':'Invalid'}
+    }
+    const session = await redisClient.get(decode.id ? decode.id.toString() : '')
+    if(!session){
+      return {'err':'Invalid-session'}
+    }
+
+    const newAccessToken = jwt.sign(decode, JwtToken)
+
+    return newAccessToken
+
   }
 
   login = async (email:string, password:string ) : Promise<any> => {
@@ -29,11 +47,16 @@ class AuthService{
       return {'err':true,'message':'Wrong Password'}
     }
 
-    const paylod = {
+    const paylod : JwtPaylod = {
       id:     user.id,
       name:   user.name,
       email:  user.email
     }
+
+    // redis wajib ada key dan value
+    redisClient.set(`${user.id}`, JSON.stringify(user),{
+      EX: RedisTime * 60 // mengatur expire data redis
+    })
 
     const data = {
       'accessToken' : this.jwtSign(paylod, `${AccessTokenTime}m`),

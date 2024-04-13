@@ -1,7 +1,7 @@
-import { Request, Response } from "express"
+import { Response } from "express"
 import UsersService from "../../services/UsersService"
 import { TypeRequest, TypeResponse } from "../../utility/InterfaceC"
-import { IUser } from "../../types/interfaces"
+import { IUser } from "../../@types/interfaces"
 
 
 
@@ -32,7 +32,7 @@ class UsersController{
       }
     }
 
-    delete = async(req:TypeRequest<Record<string, never>,IUser>,res:TypeResponse<{message:string}>) : Promise<Response> =>{
+    delete = async(req:TypeRequest<Record<string, never>,IUser>,res:TypeResponse<{message?:string, data?:any}>) : Promise<Response> =>{
         const {id} = req.params
 
         if(!id){
@@ -43,8 +43,8 @@ class UsersController{
         if(user.err){
           return res.status(400).json({'message':user.message})
         }
-        return res.status(200).json({'message':'data berhasil di hapus'})
-        // return res.status(200).json({'data':user})
+        // return res.status(200).json({'message':'data berhasil di hapus'})
+        return res.status(200).json({'data':user})
 
     }
     show = async(req:TypeRequest<Record<string, never>,IUser>,res:TypeResponse<{data?:IUser, message?:string}>) : Promise<Response> =>{
@@ -90,24 +90,3 @@ export default new UsersController()
 // show(req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>, res: Response<any, Record<string, any>>): Response<any, Record<string, any>> {
     //     throw new Error("Method not implemented.")
     // }
-
-// import { TypeRequest,TypeResponse } from "src/Utilities/util_controllers/TypeControllers";
-// import { IUser } from "./interface";
-
-// export const getUsers = (req:TypeRequest<Record<string, never>,IUser>, res: TypeResponse<{message:object,token: string}>) =>{
-//     const user:Array<IUser> = [
-//         {
-//             name: 'nanas',
-//             email: 'nanas@gmail.com'
-//         },
-//         {
-//             name: 'nanas',
-//             email: 'nanas@gmail.com'
-//         }
-//     ]
-
-//     return res.json({
-//         message:user,
-//         token: 'hsdhuasgougdofusigfugswudasgyf8t8qtw8te987qtw98t8w'
-//     })
-// }
